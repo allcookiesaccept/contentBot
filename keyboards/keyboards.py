@@ -17,10 +17,20 @@ class Keyboard:
     ]
 
     def __init__(self):
-        self.photo_acceptors = [[KeyboardButton(text=f"Сайт без фото: {site}")] for site in Keyboard.SITES]
-        self.photo_donors = [[KeyboardButton(text=f"Сайт с фото: {site}")] for site in Keyboard.SITES]
-        self.description_acceptors = [[KeyboardButton(text=f"Сайт без описаний: {site}")] for site in Keyboard.SITES]
-        self.description_donors = [[KeyboardButton(text=f"Сайт с описаниями: {site}")] for site in Keyboard.SITES]
+        self.photo_acceptors = [
+            [KeyboardButton(text=f"Сайт без фото: {site}")] for site in Keyboard.SITES
+        ]
+        self.photo_donors = [
+            [KeyboardButton(text=f"Сайт с фото: {site}")] for site in Keyboard.SITES
+        ]
+        self.description_acceptors = [
+            [KeyboardButton(text=f"Сайт без описаний: {site}")]
+            for site in Keyboard.SITES
+        ]
+        self.description_donors = [
+            [KeyboardButton(text=f"Сайт с описаниями: {site}")]
+            for site in Keyboard.SITES
+        ]
         self.tasks = [[KeyboardButton(text=f"{task}")] for task in Keyboard.TASKS]
 
         self.KEYBOARD_PHOTO_ACCEPTOR = ReplyKeyboardMarkup(

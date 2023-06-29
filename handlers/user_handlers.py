@@ -6,15 +6,14 @@ from aiogram.filters.text import Text
 from services.xml_parser import PhotoFiller
 import datetime
 from aiogram.methods.send_document import SendDocument
+
 router = Router()
+
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     # Выбрать тип задачи
     await message.answer("Определите тип задачи!", reply_markup=keys.KEYBOARD_TASK_TYPE)
-
-
-
 
 
 @router.message(Text(text="Подтянуть фотографии"))
@@ -35,12 +34,16 @@ async def choose_donor_for_photos(message: Message):
 async def processing_photos(message: Message):
     photo_donor = message.text.split(": ")[-1]
     photo_filler = PhotoFiller()
-    file_name = f'photos_from_{photo_donor}_to_{photo_acceptor}_{datetime.date.today()}.csv'
+    file_name = (
+        f"photos_from_{photo_donor}_to_{photo_acceptor}_{datetime.date.today()}.csv"
+    )
     csv_data = photo_filler(photo_acceptor, photo_donor)
-    csv_data.to_csv(f'content_files/{file_name}', encoding='utf-8', sep=';', index=False)
 
-    with open(f'content_files/{file_name}', 'rb') as file:
-        await message.answer_document(file)
+    csv_data.to_csv(
+        f"content_files/{file_name}", encoding="utf-8", sep=";", index=False
+    )
+    input_file = FSInputFile(f"content_files/{file_name}")
+    await message.answer_document(input_file)
 
     await message.answer(f"Спасибо за ответы", reply_markup=ReplyKeyboardRemove())
 

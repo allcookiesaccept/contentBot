@@ -40,11 +40,15 @@ async def choose_donor_for_photos(message: types.Message):
 async def processing_photos(message: types.Message):
     photo_donor = message.text.split(": ")[-1]
     photo_filler = PhotoFiller()
-    file_name = f'photos_from_{photo_donor}_to_{photo_acceptor}_{datetime.date.today()}.csv'
+    file_name = (
+        f"photos_from_{photo_donor}_to_{photo_acceptor}_{datetime.date.today()}.csv"
+    )
     csv_data = photo_filler(photo_acceptor, photo_donor)
-    csv_data.to_csv(f'{base_dir}/content_files/{file_name}', encoding='utf-8', sep=';', index=False)
+    csv_data.to_csv(
+        f"{base_dir}/content_files/{file_name}", encoding="utf-8", sep=";", index=False
+    )
 
-    with open(f'{base_dir}/content_files/{file_name}', 'r') as file:
+    with open(f"{base_dir}/content_files/{file_name}", "r") as file:
         await bot.send_document(message.chat.id, types.InputFile(file))
 
     await message.answer(f"Спасибо за ответы", reply_markup=types.ReplyKeyboardRemove())
@@ -77,5 +81,4 @@ async def main():
 
 
 if __name__ == "__main__":
-
     asyncio.run(main())
