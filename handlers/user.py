@@ -1,4 +1,5 @@
 import pandas
+from aiogram import types
 from aiogram import Router
 from keyboards.keyboards import keys
 from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
@@ -35,16 +36,12 @@ async def choose_donor_for_photos(message: Message):
 @router.message(Text(text=[f"Сайт с фото: {site}" for site in keys.SITES]))
 async def processing_photos(message: Message):
     photo_donor = message.text.split(": ")[-1]
-    photo_filler = PhotoFiller()
-    file_name = (
-        f"photos_from_{photo_donor}_to_{photo_acceptor}_{datetime.date.today()}.csv"
-    )
-    csv_data = photo_filler(photo_acceptor, photo_donor)
+    pf = PhotoFiller()
+    filename, df, type = pf(photo_acceptor, photo_donor)
+    df = CSVWorker(filename, df, type)
+    photo_path = df()
 
-    csv_data.to_csv(
-        f"content_files/{file_name}", encoding="utf-8", sep=";", index=False
-    )
-    input_file = FSInputFile(f"content_files/{file_name}")
+    input_file = FSInputFile(photo_path[0])
     await message.answer_document(input_file)
 
     await message.answer(f"Спасибо за ответы", reply_markup=ReplyKeyboardRemove())
@@ -68,14 +65,24 @@ async def choose_donor_for_descriptions(message: Message):
 
 @router.message(Text(text=[f"Сайт с описаниями: {site}" for site in keys.SITES]))
 async def processing_descriptions(message: Message):
+
     donor = message.text.split(": ")[-1]
     descriptions_searcher = DescriptionFiller()
-    filename, df = descriptions_searcher(description_acceptor, donor)
-    descriptions = CSVWorker(filename, df)
-    file_path = descriptions.create_file()
-    input_file = FSInputFile(file_path)
-    await message.answer_document(input_file)
+    filename, df, type = descriptions_searcher(description_acceptor, donor)
+    descriptions = CSVWorker(filename, df, type)
+    paths_list = descriptions()
+
+    for path in paths_list:
+        input_file = FSInputFile(path)
+        await message.answer_document(input_file)
+
     await message.answer(
-        f"From {donor} to {description_acceptor}\nСпасибо за ответы!",
+        f"Спасибо за ответы!",
         reply_markup=ReplyKeyboardRemove(),
     )
+
+
+# async def send_files(file_list):
+#     for file_path in file_list:
+#         input_file = FSInputFile(file_path)
+#         await message.answer_document(document=input_file)

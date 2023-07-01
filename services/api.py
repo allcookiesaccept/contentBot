@@ -9,10 +9,9 @@ class DescriptionsDownloader:
         self.results = []
 
     def fetch_data(self, url):
-
         try:
             response = requests.get(url).json()
-            description = response['data']['DETAIL_TEXT']
+            description = response["data"]["DETAIL_TEXT"]
             return url, description
         except requests.RequestException as e:
             return url, str(e)
@@ -21,11 +20,10 @@ class DescriptionsDownloader:
         while True:
             url = self.url_queue.get()
             page, description = self.fetch_data(url)
-            self.results.append({'url': page, 'description': description})
+            self.results.append({"url": page, "description": description})
             self.url_queue.task_done()
 
-    def scrape(self, urls, num_threads):
-
+    def scrape(self, urls, num_threads) -> list:
         for url in urls:
             self.url_queue.put(url)
 
@@ -37,4 +35,3 @@ class DescriptionsDownloader:
         self.url_queue.join()
 
         return self.results
-

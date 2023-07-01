@@ -7,8 +7,8 @@ import datetime
 import re
 from services.api import DescriptionsDownloader
 
-class XMLParser:
 
+class XMLParser:
     FEEDS = {
         "iport": {
             "without_photos": "https://api.iport.ru/files/export/iport_no_photo.xml",
@@ -85,7 +85,7 @@ class XMLParser:
 
         return root.findall(".//offer")
 
-    def extract_empty_products_data(self, xml_offers):
+    def extract_empty_products_data(self, xml_offers) -> pandas.DataFrame:
         offers = []
         for offer in xml_offers:
             id = offer.get("id")
@@ -99,14 +99,17 @@ class XMLParser:
 
         return pd.DataFrame(offers)
 
+
 class PhotoFiller(XMLParser):
     def __init__(self):
         super().__init__()
+        self.type = 'photo'
 
     def __call__(self, site_acceptor, site_donor):
-
         try:
-            no_photo = self.get_offers_from_xml(self.FEEDS[site_acceptor]["without_photos"])
+            no_photo = self.get_offers_from_xml(
+                self.FEEDS[site_acceptor]["without_photos"]
+            )
             no_photo_df = self.extract_empty_products_data(no_photo)
 
             photo = self.get_offers_from_xml(self.FEEDS[site_donor]["with_photos"])
@@ -122,9 +125,7 @@ class PhotoFiller(XMLParser):
                 lambda x: self._replace_image_link(x, site_acceptor)
             )
 
-            file_name = (
-                f"photos_from_{site_acceptor}_to_{site_donor}_{datetime.date.today()}.csv"
-            )
+            file_name = f"photos_from_{site_acceptor}_to_{site_donor}_{datetime.date.today()}"
             merged_df.rename(
                 columns=dict(
                     zip(merged_df.columns, self.COLUMNS[site_acceptor]["photo_upload"])
@@ -132,12 +133,12 @@ class PhotoFiller(XMLParser):
                 inplace=True,
             )
 
-            return file_name, merged_df
+            return file_name, merged_df, self.type
 
         except Exception as e:
             print({e})
 
-    def extract_photo_products_data(self, xml_offers):
+    def extract_photo_products_data(self, xml_offers) -> pandas.DataFrame:
         offers = []
 
         for offer in xml_offers:
@@ -155,7 +156,8 @@ class PhotoFiller(XMLParser):
         df = pd.DataFrame(offers)
 
         return df.explode("pictures")
-    def _replace_image_link(self, link, site_acceptor):
+
+    def _replace_image_link(self, link, site_acceptor) -> str:
         new_link = str(link).replace("http:", "https:").replace("www.", "cdn.")
         new_link = new_link.replace("iport", site_acceptor)
         return new_link
@@ -165,12 +167,18 @@ class DescriptionFiller(XMLParser):
     def __init__(self):
         super().__init__()
         self.downloader = DescriptionsDownloader()
+        self.type = 'description'
+
 
     def __call__(self, site_acceptor, site_donor) -> (str, pd.DataFrame):
         try:
-            no_descriptions = self.get_offers_from_xml(self.FEEDS[site_acceptor]["without_description"])
+            no_descriptions = self.get_offers_from_xml(
+                self.FEEDS[site_acceptor]["without_description"]
+            )
             no_descriptions_df = self.extract_empty_products_data(no_descriptions)
-            descriptions = self.get_offers_from_xml(self.FEEDS[site_donor]["with_description"])
+            descriptions = self.get_offers_from_xml(
+                self.FEEDS[site_donor]["with_description"]
+            )
             descriptions_df = self.extract_product_description_urls(descriptions)
             merged_df = pd.merge(
                 no_descriptions_df,
@@ -181,17 +189,18 @@ class DescriptionFiller(XMLParser):
             )
             merged_df.dropna(inplace=True)
 
-            urls = merged_df['url'].to_list()
+            urls = merged_df["url"].to_list()
             descriptions = self.downloader.scrape(urls, 20)
             descriptions_table = pd.DataFrame(descriptions)
-            merged_df = pd.merge(merged_df, descriptions_table, how='left', right_on='url', left_on='url')
-            file_name = (
-                f'descs:{site_donor}_>_{site_acceptor}_{datetime.date.today()}.csv'
+            merged_df = pd.merge(
+                merged_df, descriptions_table, how="left", right_on="url", left_on="url"
             )
-            return file_name, merged_df
+            file_name = (
+                f"descs_{site_donor}_>_{site_acceptor}_{datetime.date.today()}"
+            )
+            return file_name, merged_df, self.type
         except Exception as e:
             print({e})
-
 
     def extract_product_description_urls(self, xml_offers) -> pandas.DataFrame:
         offers = []
