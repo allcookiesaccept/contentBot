@@ -2,9 +2,7 @@ import pandas
 import pandas as pd
 import requests
 import xml.etree.ElementTree as ET
-import logging
 import datetime
-import re
 from services.api import DescriptionsDownloader
 
 
@@ -103,7 +101,7 @@ class XMLParser:
 class PhotoFiller(XMLParser):
     def __init__(self):
         super().__init__()
-        self.type = 'photo'
+        self.type = "photo"
 
     def __call__(self, site_acceptor, site_donor):
         try:
@@ -125,7 +123,9 @@ class PhotoFiller(XMLParser):
                 lambda x: self._replace_image_link(x, site_acceptor)
             )
 
-            file_name = f"photos_from_{site_acceptor}_to_{site_donor}_{datetime.date.today()}"
+            file_name = (
+                f"photos_from_{site_acceptor}_to_{site_donor}_{datetime.date.today()}"
+            )
             merged_df.rename(
                 columns=dict(
                     zip(merged_df.columns, self.COLUMNS[site_acceptor]["photo_upload"])
@@ -167,8 +167,7 @@ class DescriptionFiller(XMLParser):
     def __init__(self):
         super().__init__()
         self.downloader = DescriptionsDownloader()
-        self.type = 'description'
-
+        self.type = "description"
 
     def __call__(self, site_acceptor, site_donor) -> (str, pd.DataFrame):
         try:
@@ -195,9 +194,7 @@ class DescriptionFiller(XMLParser):
             merged_df = pd.merge(
                 merged_df, descriptions_table, how="left", right_on="url", left_on="url"
             )
-            file_name = (
-                f"descs_{site_donor}_>_{site_acceptor}_{datetime.date.today()}"
-            )
+            file_name = f"descs_{site_donor}_>_{site_acceptor}_{datetime.date.today()}"
             return file_name, merged_df, self.type
         except Exception as e:
             print({e})

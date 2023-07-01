@@ -1,5 +1,3 @@
-import pandas
-from aiogram import types
 from aiogram import Router
 from keyboards.keyboards import keys
 from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
@@ -7,8 +5,6 @@ from aiogram.filters import Command
 from aiogram.filters.text import Text
 from services.xml import PhotoFiller, DescriptionFiller
 from services.csv import CSVWorker
-import datetime
-from aiogram.methods.send_document import SendDocument
 
 router = Router()
 
@@ -65,7 +61,6 @@ async def choose_donor_for_descriptions(message: Message):
 
 @router.message(Text(text=[f"Сайт с описаниями: {site}" for site in keys.SITES]))
 async def processing_descriptions(message: Message):
-
     donor = message.text.split(": ")[-1]
     descriptions_searcher = DescriptionFiller()
     filename, df, type = descriptions_searcher(description_acceptor, donor)
@@ -80,9 +75,3 @@ async def processing_descriptions(message: Message):
         f"Спасибо за ответы!",
         reply_markup=ReplyKeyboardRemove(),
     )
-
-
-# async def send_files(file_list):
-#     for file_path in file_list:
-#         input_file = FSInputFile(file_path)
-#         await message.answer_document(document=input_file)
