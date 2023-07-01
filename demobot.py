@@ -5,7 +5,7 @@ from aiogram.filters import Command
 from config.config import Config, load_config
 from keyboards.keyboards import keys
 from aiogram.filters import Text
-from services.xml_parser import PhotoFiller
+from services.xml import PhotoFiller
 from pathlib import Path
 import datetime
 
