@@ -194,6 +194,15 @@ class DescriptionFiller(XMLParser):
             merged_df = pd.merge(
                 merged_df, descriptions_table, how="left", right_on="url", left_on="url"
             )
+            merged_df.drop(columns=["id", "url"], inplace=True)
+
+            merged_df.rename(
+                columns=dict(
+                    zip(merged_df.columns, self.COLUMNS[site_acceptor]["description_upload"])
+                ),
+                inplace=True,
+            )
+
             file_name = f"{site_donor}_{site_acceptor}_{datetime.date.today()}.csv"
             return file_name, merged_df, self.type
         except Exception as e:

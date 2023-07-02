@@ -18,7 +18,7 @@ class CSVWorker:
     def __init__(self, filename: str, dataframe: pandas.DataFrame, type: str):
         self.worker = CSVFile(filename, dataframe, type)
         self.rows = len(dataframe)
-        self.chunk = 30
+        self.chunk = 100
         self.filepath = content_folder_path
         self.ready_files_paths = []
 
