@@ -1,12 +1,10 @@
-# https://mastergroosha.github.io/aiogram-3-guide/quickstart/
-# template - https://github.com/welel/dialog-chat-bot
-
 import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher
 
 from config.config import Config, load_config
-from handlers import user_handlers
+from handlers import user
 
 
 logger = logging.getLogger(__name__)
@@ -24,9 +22,9 @@ async def main():
     config: Config = load_config()
 
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
-    dp: Dispatcher = Dispatcher()
+    dp: Dispatcher = Dispatcher(bot=bot)
 
-    dp.include_router(user_handlers.router)
+    dp.include_router(user.router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
