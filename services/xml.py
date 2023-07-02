@@ -124,7 +124,7 @@ class PhotoFiller(XMLParser):
             )
 
             file_name = (
-                f"photos_from_{site_acceptor}_to_{site_donor}_{datetime.date.today()}"
+                f"photos_from_{site_donor}_to_{site_acceptor}_{datetime.date.today()}.csv"
             )
             merged_df.rename(
                 columns=dict(
@@ -194,7 +194,7 @@ class DescriptionFiller(XMLParser):
             merged_df = pd.merge(
                 merged_df, descriptions_table, how="left", right_on="url", left_on="url"
             )
-            file_name = f"descs_{site_donor}_>_{site_acceptor}_{datetime.date.today()}"
+            file_name = f"{site_donor}_{site_acceptor}_{datetime.date.today()}.csv"
             return file_name, merged_df, self.type
         except Exception as e:
             print({e})
