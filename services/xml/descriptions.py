@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from services.xml.parser import XMLParser
-from services.api import DescriptionsDownloaderHTTPX
+from services.api import DescriptionsDownloaderHTTPX, DescriptionsDownloader
 from services.csv import CSVFile
 
 
@@ -13,7 +13,7 @@ class DescriptionMatcher(XMLParser):
     def __call__(self, site_acceptor) -> CSVFile:
         self.site_acceptor = site_acceptor
         self.collect_donor_feeds()
-        self.downloader = DescriptionsDownloaderHTTPX()
+        self.downloader = DescriptionsDownloader()
         file_name = f"descriptions_for_{site_acceptor}_{datetime.date.today()}.csv"
 
         try:
