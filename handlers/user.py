@@ -63,8 +63,8 @@ async def choose_donor_for_descriptions(message: Message):
 async def processing_descriptions(message: Message):
     donor = message.text.split(": ")[-1]
     descriptions_searcher = DescriptionFiller()
-    filename, df, type = descriptions_searcher(description_acceptor, donor)
-    descriptions = CSVWorker(filename, df, type)
+    filename, df, frame_type = descriptions_searcher(description_acceptor, donor)
+    descriptions = CSVWorker(filename, df, frame_type)
     paths_list = descriptions()
 
     for path in paths_list:
