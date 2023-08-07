@@ -3,15 +3,16 @@ from keyboards.keyboards import keys
 from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
 from aiogram.filters import Command
 from aiogram.filters.text import Text
-from services.xml import PhotoFiller, DescriptionFiller
-from services.csv import CSVWorker
+from services.xml.photos import PhotoMatcher
+from services.xml.descriptions import DescriptionFiller
+from services.csv import CSVWorker, CSVFile
+
 
 router = Router()
 
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
-    # Выбрать тип задачи
     await message.answer("Определите тип задачи!", reply_markup=keys.KEYBOARD_TASK_TYPE)
 
 
@@ -24,22 +25,15 @@ async def init_photo_task(message: Message):
 
 @router.message(Text(text=[f"Сайт без фото: {site}" for site in keys.SITES]))
 async def choose_donor_for_photos(message: Message):
-    global photo_acceptor
+
     photo_acceptor = message.text.split(": ")[-1]
-    await message.answer("Выберите сайт c фото", reply_markup=keys.KEYBOARD_PHOTO_DONOR)
+    photo_matcher = PhotoMatcher()
+    processed_data: CSVFile = photo_matcher(photo_acceptor)
+    dataframe = CSVWorker(processed_data)
+    file_path = dataframe()
+    input_file = FSInputFile(file_path[0])
 
-
-@router.message(Text(text=[f"Сайт с фото: {site}" for site in keys.SITES]))
-async def processing_photos(message: Message):
-    photo_donor = message.text.split(": ")[-1]
-    pf = PhotoFiller()
-    filename, df, type = pf(photo_acceptor, photo_donor)
-    df = CSVWorker(filename, df, type)
-    photo_path = df()
-
-    input_file = FSInputFile(photo_path[0])
     await message.answer_document(input_file)
-
     await message.answer(f"Спасибо за ответы", reply_markup=ReplyKeyboardRemove())
 
 
