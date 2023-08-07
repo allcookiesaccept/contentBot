@@ -2,87 +2,109 @@ import datetime
 import pandas as pd
 from services.xml.parser import XMLParser
 from services.api import DescriptionsDownloaderHTTPX
+from services.csv import CSVFile
+
 
 class DescriptionMatcher(XMLParser):
     def __init__(self):
         super().__init__()
-        self.downloader = DescriptionsDownloaderHTTPX()
         self.type = "description"
 
-    def __call__(self, site_acceptor, site_donor) -> (str, pd.DataFrame, str):
+    def __call__(self, site_acceptor) -> CSVFile:
+        self.site_acceptor = site_acceptor
+        self.collect_donor_feeds()
+        self.downloader = DescriptionsDownloaderHTTPX()
+        file_name = f"descriptions_for_{site_acceptor}_{datetime.date.today()}.csv"
+
         try:
-            no_descriptions = self.get_offers_from_xml(
-                self.FEEDS[site_acceptor]["without_description"]
+            self.no_descriptions_dataframe: pd.DataFrame = (
+                self.create_empty_products_df()
             )
-            no_descriptions_df = self.extract_empty_products_data(no_descriptions)
-            print(f'no_descriptions_df_created')
-            print(no_descriptions_df.columns)
-
-
-            descriptions = self.get_offers_from_xml(
-                self.FEEDS[site_donor]["with_description"]
-            )
-            descriptions_df = self.extract_product_description_urls(descriptions)
-            print(descriptions_df.columns)
-            print(f'descriptions_df_created')
-
-            merged_df = pd.merge(
-                no_descriptions_df,
-                descriptions_df,
-                how="left",
-                left_on="id",
-                right_on="id",
-            )
-
-            print(f'tables merged')
-            print(merged_df.columns)
-            merged_df.dropna(inplace=True)
-            print(f'na dropped')
-
-            urls = merged_df["url"].to_list()
-            print(f'urls_to_list')
-            print(urls)
-
-            descriptions = self.downloader.scrape(urls, 10)
-            print(f'descriptions_scraped')
-            print(descriptions)
-
-            descriptions_table = pd.DataFrame(descriptions)
-            print(f'description_table_created')
-            # print(descriptions_table)
-
-            merged_df = pd.merge(
-                merged_df, descriptions_table, how="left", right_on="url", left_on="url"
-            )
-            print(f'description_table_merged')
-
-            merged_df.drop(columns=["id", "url"], inplace=True)
-            print(f'description_table_dropped')
-            merged_df.rename(
-                columns=dict(
-                    zip(merged_df.columns, self.COLUMNS[site_acceptor]["description_upload"])
-                ),
-                inplace=True,
-            )
-            print(f'description_table_columns_renamed')
-
-            file_name = f"{site_donor}_{site_acceptor}_{datetime.date.today()}.csv"
-            print(f'file_name_created')
-
-            print(file_name, merged_df, self.type)
-            return file_name, merged_df, self.type
+            self.no_description_codes: list = self.no_descriptions_dataframe[
+                "id"
+            ].to_list()
+            self.description_links_dataframe = self.extract_description_links()
+            self.collected_descriptions = self.collect_descriptions()
+            merged_dataframe = self.merge_dataframes()
+            merged_dataframe.dropna(inplace=True)
+            return CSVFile(file_name, merged_dataframe, self.type)
         except Exception as e:
             print({e})
 
-    def extract_product_description_urls(self, xml_offers) -> pd.DataFrame:
+    def collect_donor_feeds(self) -> list:
+        self.donor_feeds = list(x["with_description"] for x in self.FEEDS.values())
+        self.donor_feeds.remove(self.FEEDS[self.site_acceptor]["with_description"])
+        return self.donor_feeds
+
+    def create_empty_products_df(self) -> pd.DataFrame:
+        try:
+            xml_offers = self.get_offers_from_xml(
+                self.FEEDS[self.site_acceptor]["without_description"]
+            )
+            empty_products = self.extract_empty_products_data(xml_offers)
+            return empty_products
+        except Exception as ex:
+            print(ex)
+
+    def extract_description_links(self) -> pd.DataFrame:
+        df = pd.DataFrame(columns=["id", "url"])
+
+        for feed in self.donor_feeds:
+            xml_offers = self.get_offers_from_xml(feed)
+            feed_df: pd.DataFrame = self.extract_description_products_data(xml_offers)
+            df = pd.concat([df, feed_df])
+            parsed_codes = feed_df["id"]
+            parsed_codes.drop_duplicates(inplace=True)
+            for code in parsed_codes:
+                self.no_description_codes.remove(code)
+
+        return df
+
+    def extract_description_products_data(self, xml_offers) -> pd.DataFrame:
         offers = []
         for offer in xml_offers:
             id = offer.get("id")
             url = offer.find("url")
-            offers.append(
-                {
-                    "id": id,
-                    "url": url.text,
-                }
-            )
-        return pd.DataFrame(offers)
+            if url is not None and id in self.no_description_codes:
+                offers.append(
+                    {
+                        "id": id,
+                        "url": url.text,
+                    }
+                )
+
+        if len(offers) > 0:
+            df = pd.DataFrame(offers)
+            return df
+        else:
+            return pd.DataFrame(columns=["id", "url"])
+
+    def collect_descriptions(self) -> pd.DataFrame:
+        description_links = self.description_links_dataframe["url"].to_list()
+        descriptions = self.downloader.scrape(description_links, 10)
+        descriptions_dataframe = pd.DataFrame(descriptions)
+        df = pd.merge(
+            descriptions_dataframe,
+            self.description_links_dataframe,
+            how="left",
+            left_on="url",
+            right_on="url",
+        )
+        return df
+
+    def merge_dataframes(self):
+        df = pd.merge(
+            self.no_descriptions_dataframe,
+            self.collected_descriptions,
+            how="left",
+            left_on="id",
+            right_on="id",
+        )
+        df.drop(columns=["id", "url"], inplace=True)
+        df.rename(
+            columns=dict(
+                zip(df.columns, self.COLUMNS[self.site_acceptor]["description_upload"])
+            ),
+            inplace=True,
+        )
+        return df

@@ -81,6 +81,7 @@ class XMLParser:
 
     def extract_empty_products_data(self, xml_offers) -> pd.DataFrame:
         offers = []
+
         for offer in xml_offers:
             id = offer.get("id")
             external = offer.find("param[@name='external']").text
@@ -91,8 +92,11 @@ class XMLParser:
                 }
             )
 
-        return pd.DataFrame(offers)
-
+        if len(offers) > 0:
+            df = pd.DataFrame(offers)
+            return df
+        else:
+            return pd.DataFrame(columns=["id", "external"])
 
     def create_empty_products_df(self) -> pd.DataFrame:
         ...
