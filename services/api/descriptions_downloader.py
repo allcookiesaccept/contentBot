@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import httpx
 
 
-class DescriptionsDownloaderHTTPX:
+class DescriptionsDownloaderHTTPXExecutor:
     def __init__(self):
         self.results = []
 

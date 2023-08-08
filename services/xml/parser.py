@@ -9,8 +9,8 @@ class XMLParser:
     COLUMNS = COLUMNS
 
     def __init__(self):
-        self.parser_type = None
-        self.site_acceptor = None
+        self.parser_type = None  # will get the value in the child
+        self.site_acceptor = None  # will get the value in the child
 
     def get_offers_from_xml(self, url: str) -> list:
         response = requests.get(url)
@@ -42,11 +42,13 @@ class XMLParser:
         xml_offers = None
 
         if type(self.parser_type) == str and type(self.site_acceptor) == str:
+
+            empty_product_slugs = self.parser_type.split("_")
+            empty_product_string = (
+                f"{empty_product_slugs[0]}out_{empty_product_slugs[1]}"
+            )
+
             try:
-                empty_product_slugs = self.parser_type.split("_")
-                empty_product_string = (
-                    f"{empty_product_slugs[0]}out_{empty_product_slugs[1]}"
-                )
                 empty_product_feed = self.FEEDS[self.site_acceptor][
                     empty_product_string
                 ]
@@ -59,8 +61,6 @@ class XMLParser:
             )
 
         empty_products = self.extract_empty_products_data(xml_offers)
-        if len(empty_products) == 0:
-            print(f"no empty products")
 
         return empty_products
 

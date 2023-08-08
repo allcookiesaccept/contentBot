@@ -10,30 +10,33 @@ class CSVWorker:
         self.rows = len(processed_data.dataframe)
         self.chunk = 100
         self.ready_files_paths = []
-        self.__create_content_files_directory()
-
-    def __create_content_files_directory(self):
         self.content_files_directory = os.path.join(
             CSVWorker.project_folder_path, "content_files"
         )
 
+        self.__check_content_files_directory()
+
+    def __check_content_files_directory(self) -> None:
         if not os.path.exists(self.content_files_directory):
             os.makedirs(self.content_files_directory)
 
-    def __call__(self):
+        return
+
+    def __call__(self) -> list:
         if self.worker.type == "with_description" and self.rows > self.chunk:
-            self.divide_on_blocks()
+            self.__divide_on_blocks()
         else:
-            self.create_file()
+            self.__create_file()
 
         return self.ready_files_paths
 
-    def create_file(self) -> list:
+    def __create_file(self) -> None:
         file_path = os.path.join(self.content_files_directory, self.worker.filename)
         self.worker.dataframe.to_csv(file_path, encoding="utf-8", sep=";", index=False)
         self.ready_files_paths.append(file_path)
+        return
 
-    def divide_on_blocks(self) -> list:
+    def __divide_on_blocks(self) -> None:
         blocks = [
             self.worker.dataframe.iloc[i : i + self.chunk]
             for i in range(0, len(self.worker.dataframe), self.chunk)
@@ -44,3 +47,4 @@ class CSVWorker:
             file_path = os.path.join(self.content_files_directory, filename)
             block.to_csv(file_path, encoding="utf-8", sep=";", index=False)
             self.ready_files_paths.append(file_path)
+        return

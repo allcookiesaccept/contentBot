@@ -1,7 +1,7 @@
 import datetime
 import pandas as pd
 from services.xml.parser import XMLParser
-from services.csv import CSVFile
+from config.models import CSVFile
 from typing import Union
 
 

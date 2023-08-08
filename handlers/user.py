@@ -1,11 +1,12 @@
 from aiogram import Router
 from keyboards.keyboards import keys
 from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
-from aiogram.filters import Command
+from aiogram.filters import Command, MagicData
 from aiogram.filters.text import Text
 from services.xml.photos import PhotoMatcher
 from services.xml.descriptions import DescriptionMatcher
-from services.csv import CSVWorker, CSVFile
+from config.models import CSVFile
+from services.csv.worker import CSVWorker
 
 
 router = Router()

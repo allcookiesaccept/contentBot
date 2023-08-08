@@ -1,8 +1,8 @@
 import datetime
 import pandas as pd
 from services.xml.parser import XMLParser
-from services.api import DescriptionsDownloaderHTTPX, DescriptionsDownloader
-from services.csv import CSVFile
+from services.api.descriptions_downloader import DescriptionsDownloader
+from config.models import CSVFile
 from typing import Union
 
 
