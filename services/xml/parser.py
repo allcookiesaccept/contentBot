@@ -1,5 +1,5 @@
 import pandas as pd
-import httpx
+import requests
 import xml.etree.ElementTree as ET
 from db.data import FEEDS, COLUMNS
 
@@ -13,7 +13,7 @@ class XMLParser:
         self.site_acceptor = None
 
     def get_offers_from_xml(self, url: str) -> list:
-        response = httpx.get(url)
+        response = requests.get(url)
         text = response.text
         root = ET.fromstring(text)
 
@@ -59,6 +59,8 @@ class XMLParser:
             )
 
         empty_products = self.extract_empty_products_data(xml_offers)
+        if len(empty_products) == 0:
+            print(f"no empty products")
 
         return empty_products
 

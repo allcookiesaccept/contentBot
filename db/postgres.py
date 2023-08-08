@@ -1,7 +1,6 @@
 import psycopg2
 from config.data_manager import DataManager
 
-import inspect
 class Postgres:
 
     def __init__(self):
@@ -16,11 +15,11 @@ class Postgres:
     def __call__(self):
         try:
             self.connection = psycopg2.connect(
-                host = self.host,
-                port = self.port,
-                database = self.database,
-                user = self.user,
-                password = self.password)
+                host=self.host,
+                port=self.port,
+                database=self.database,
+                user=self.user,
+                password=self.password)
             print(f"Connected to the {self.database} database")
 
         except Exception as e:

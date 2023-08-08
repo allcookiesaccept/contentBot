@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from .models import BotApi, Postgres
+from .models import Postgres, TelegramBot, BotConfig
 
 
 
@@ -18,14 +18,15 @@ class DataManager:
             raise Exception("DataManger is a singleton class")
         else:
             load_dotenv()
-            self.__bitrix_user = self.load_bitrix_user()
+            self.__bot_token = self.get_token()
             self.__postgres_info = self.load_postgres_data()
             DataManager.__instance = self
 
-    def get_token(self) -> BotApi:
+    def get_token(self) -> BotConfig:
 
         token = os.getenv("TOKEN")
-        return BotApi(token)
+        tg_bot: TelegramBot = TelegramBot(token=token)
+        return BotConfig(tg_bot=tg_bot)
 
     def load_postgres_data(self) -> Postgres:
 

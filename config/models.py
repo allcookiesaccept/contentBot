@@ -1,9 +1,13 @@
 from dataclasses import dataclass
+import pandas
 
 @dataclass
-class BotApi:
+class TelegramBot:
     token: str
 
+@dataclass
+class BotConfig:
+    tg_bot: TelegramBot
 
 @dataclass
 class Postgres:
@@ -12,3 +16,9 @@ class Postgres:
     database: str
     user: str
     password: str
+
+@dataclass()
+class CSVFile:
+    filename: str
+    dataframe: pandas.DataFrame
+    type: str

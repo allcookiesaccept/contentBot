@@ -26,7 +26,6 @@ class DescriptionMatcher(XMLParser):
             self.description_links_dataframe = self.extract_description_links()
             self.collected_descriptions = self.collect_descriptions()
             merged_dataframe = self.merge_dataframes()
-            merged_dataframe.dropna(inplace=True)
             return CSVFile(file_name, merged_dataframe, self.parser_type)
         except Exception as e:
             print({e})
@@ -94,4 +93,9 @@ class DescriptionMatcher(XMLParser):
             ),
             inplace=True,
         )
+        df.dropna(inplace=True)
+        print(df.shape[0])
+        if len(df) == 0:
+            return pd.DataFrame(columns=['id', 'description'])
+
         return df

@@ -48,12 +48,18 @@ async def choose_donor_for_descriptions(message: Message):
     description_acceptor = message.text.split(": ")[-1]
     description_matcher = DescriptionMatcher()
     processed_data: CSVFile = description_matcher(description_acceptor)
-    descriptions = CSVWorker(processed_data)
-    paths_list = descriptions()
+    print(type(processed_data))
+    print(type(processed_data.dataframe.shape[0]))
+    print(len(processed_data.dataframe))
+    if type(processed_data) == None:
+        await message.answer(f"Не нашлось подходящих описаний")
+    else:
+        descriptions = CSVWorker(processed_data)
+        paths_list = descriptions()
 
-    for path in paths_list:
-        input_file = FSInputFile(path)
-        await message.answer_document(input_file)
+        for path in paths_list:
+            input_file = FSInputFile(path)
+            await message.answer_document(input_file)
 
     await message.answer(
         f"Спасибо за ответы!",
