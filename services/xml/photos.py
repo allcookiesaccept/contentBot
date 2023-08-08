@@ -7,7 +7,7 @@ from services.csv import CSVFile
 class PhotoMatcher(XMLParser):
     def __init__(self):
         super().__init__()
-        self.type = "photo"
+        self.parser_type = "with_photos"
 
     def __call__(self, site_acceptor: str) -> CSVFile:
         self.site_acceptor = site_acceptor
@@ -20,25 +20,12 @@ class PhotoMatcher(XMLParser):
             self.parsed_photos: pd.DataFrame = self.extract_photos()
             merged_dataframe = self.merge_dataframes()
 
-            return CSVFile(file_name, merged_dataframe, self.type)
+            return CSVFile(file_name, merged_dataframe, self.parser_type)
 
         except Exception as ex:
             print(f"{ex}")
 
-    def create_empty_products_df(self) -> pd.DataFrame:
-        try:
-            xml_offers = self.get_offers_from_xml(
-                self.FEEDS[self.site_acceptor]["without_photos"]
-            )
-            empty_products = self.extract_empty_products_data(xml_offers)
-            return empty_products
-        except Exception as ex:
-            print(ex)
 
-    def collect_donor_feeds(self) -> list:
-        self.donor_feeds = list(x["with_photos"] for x in self.FEEDS.values())
-        self.donor_feeds.remove(self.FEEDS[self.site_acceptor]["with_photos"])
-        return self.donor_feeds
 
     def extract_photos(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=["id", "pictures"])

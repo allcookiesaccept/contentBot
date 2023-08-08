@@ -8,7 +8,7 @@ from services.csv import CSVFile
 class DescriptionMatcher(XMLParser):
     def __init__(self):
         super().__init__()
-        self.type = "description"
+        self.parser_type = "with_description"
 
     def __call__(self, site_acceptor) -> CSVFile:
         self.site_acceptor = site_acceptor
@@ -27,24 +27,11 @@ class DescriptionMatcher(XMLParser):
             self.collected_descriptions = self.collect_descriptions()
             merged_dataframe = self.merge_dataframes()
             merged_dataframe.dropna(inplace=True)
-            return CSVFile(file_name, merged_dataframe, self.type)
+            return CSVFile(file_name, merged_dataframe, self.parser_type)
         except Exception as e:
             print({e})
 
-    def collect_donor_feeds(self) -> list:
-        self.donor_feeds = list(x["with_description"] for x in self.FEEDS.values())
-        self.donor_feeds.remove(self.FEEDS[self.site_acceptor]["with_description"])
-        return self.donor_feeds
 
-    def create_empty_products_df(self) -> pd.DataFrame:
-        try:
-            xml_offers = self.get_offers_from_xml(
-                self.FEEDS[self.site_acceptor]["without_description"]
-            )
-            empty_products = self.extract_empty_products_data(xml_offers)
-            return empty_products
-        except Exception as ex:
-            print(ex)
 
     def extract_description_links(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=["id", "url"])
