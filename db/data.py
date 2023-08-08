@@ -62,3 +62,23 @@ COLUMNS = {
         "description_upload": ["IE_XML_ID", "IE_DETAIL_TEXT"],
     },
 }
+
+SITES = [
+    "iport",
+    "nbcomputers",
+    "nbcomgroup",
+    "samsungstore",
+    "s-centres",
+    "micenter",
+]
+
+TASKS = [
+    "Загрузить фотографии",
+    "Добавить описания",
+    "Вызвать ошибку"
+]
+
+REPRISE = ["Почему бы и нет?", "В другой раз."]
+
+PHOTOLESS_SITES = [f"Сайт без фото: {site}" for site in SITES]
+DESCRIPTIONLESS_SITIES = [f"Сайт без описаний: {site}" for site in SITES]

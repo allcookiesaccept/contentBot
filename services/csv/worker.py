@@ -1,9 +1,11 @@
 from config.models import CSVFile
+from pathlib import Path
 import os
 
+project_folder_path = Path('../contentBot/')
 
 class CSVWorker:
-    project_folder_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
     def __init__(self, processed_data: CSVFile):
         self.worker = processed_data
@@ -11,7 +13,7 @@ class CSVWorker:
         self.chunk = 100
         self.ready_files_paths = []
         self.content_files_directory = os.path.join(
-            CSVWorker.project_folder_path, "content_files"
+            project_folder_path, "content_files"
         )
 
         self.__check_content_files_directory()

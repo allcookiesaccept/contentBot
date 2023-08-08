@@ -30,7 +30,9 @@ async def main():
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
     dp: Dispatcher = Dispatcher(bot=bot)
 
+
     dp.include_router(user.router)
+
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

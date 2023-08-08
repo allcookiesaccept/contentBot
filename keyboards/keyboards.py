@@ -1,55 +1,39 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from db.data import REPRISE, TASKS, DESCRIPTIONLESS_SITIES, PHOTOLESS_SITES
 
 
 class Keyboard:
-    SITES = [
-        "iport",
-        "nbcomputers",
-        "nbcomgroup",
-        "samsungstore",
-        "s-centres",
-        "micenter",
-    ]
-
-    TASKS = [
-        "Загрузить фотографии",
-        "Добавить описания",
-    ]
-
     def __init__(self):
+        self.__activate_keyboard_lists()
+        self.__activate_keyboard_chat_objects()
+
+    def __activate_keyboard_lists(self):
+        self.reprise_answers = [[KeyboardButton(text=message)] for message in REPRISE]
         self.photo_acceptors = [
-            [KeyboardButton(text=f"Сайт без фото: {site}")] for site in Keyboard.SITES
-        ]
-        self.photo_donors = [
-            [KeyboardButton(text=f"Сайт с фото: {site}")] for site in Keyboard.SITES
+            [KeyboardButton(text=message)] for message in PHOTOLESS_SITES
         ]
         self.description_acceptors = [
-            [KeyboardButton(text=f"Сайт без описаний: {site}")]
-            for site in Keyboard.SITES
+            [KeyboardButton(text=message)] for message in DESCRIPTIONLESS_SITIES
         ]
-        self.description_donors = [
-            [KeyboardButton(text=f"Сайт с описаниями: {site}")]
-            for site in Keyboard.SITES
-        ]
-        self.tasks = [[KeyboardButton(text=f"{task}")] for task in Keyboard.TASKS]
+        self.tasks = [[KeyboardButton(text=message)] for message in TASKS]
 
-        self.KEYBOARD_PHOTO_ACCEPTOR = ReplyKeyboardMarkup(
+    def __activate_keyboard_chat_objects(self):
+        self.REPRISE = ReplyKeyboardMarkup(
+            keyboard=self.reprise_answers,
+            resize_keyboard=True,
+        )
+
+        self.PHOTO_ACCEPTOR = ReplyKeyboardMarkup(
             keyboard=self.photo_acceptors,
             resize_keyboard=True,
         )
-        self.KEYBOARD_PHOTO_DONOR = ReplyKeyboardMarkup(
-            keyboard=self.photo_donors,
-            resize_keyboard=True,
-        )
-        self.KEYBOARD_DESCRIPTION_ACCEPTOR = ReplyKeyboardMarkup(
+
+        self.DESCRIPTION_ACCEPTOR = ReplyKeyboardMarkup(
             keyboard=self.description_acceptors,
             resize_keyboard=True,
         )
-        self.KEYBOARD_DESCRIPTION_DONOR = ReplyKeyboardMarkup(
-            keyboard=self.description_donors,
-            resize_keyboard=True,
-        )
-        self.KEYBOARD_TASK_TYPE = ReplyKeyboardMarkup(
+
+        self.TASK_TYPE = ReplyKeyboardMarkup(
             keyboard=self.tasks,
             resize_keyboard=True,
         )
