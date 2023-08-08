@@ -28,11 +28,14 @@ async def choose_donor_for_photos(message: Message):
     photo_acceptor = message.text.split(": ")[-1]
     photo_matcher = PhotoMatcher()
     processed_data: CSVFile = photo_matcher(photo_acceptor)
-    dataframe = CSVWorker(processed_data)
-    file_path = dataframe()
-    input_file = FSInputFile(file_path[0])
+    if processed_data == "No photos":
+        await message.answer(f"Не нашлось подходящих фотографий")
+    else:
+        dataframe = CSVWorker(processed_data)
+        file_path = dataframe()
+        input_file = FSInputFile(file_path[0])
+        await message.answer_document(input_file)
 
-    await message.answer_document(input_file)
     await message.answer(f"Спасибо за ответы", reply_markup=ReplyKeyboardRemove())
 
 

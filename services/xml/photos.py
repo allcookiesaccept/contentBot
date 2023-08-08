@@ -18,14 +18,14 @@ class PhotoMatcher(XMLParser):
             self.no_photos_dataframe: pd.DataFrame = self.create_empty_products_df()
             self.no_photo_codes: list = self.no_photos_dataframe["id"].to_list()
             self.parsed_photos: pd.DataFrame = self.extract_photos()
-            merged_dataframe = self.merge_dataframes()
-
-            return CSVFile(file_name, merged_dataframe, self.parser_type)
+            if len(self.parsed_photos) > 0:
+                merged_dataframe = self.merge_dataframes()
+                return CSVFile(file_name, merged_dataframe, self.parser_type)
+            else:
+                return "No photos"
 
         except Exception as ex:
             print(f"{ex}")
-
-
 
     def extract_photos(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=["id", "pictures"])
