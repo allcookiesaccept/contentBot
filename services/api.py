@@ -29,6 +29,7 @@ class DescriptionsDownloaderHTTPX:
 
         return self.results
 
+
 from queue import Queue
 from threading import Thread
 import requests
@@ -38,11 +39,11 @@ class DescriptionsDownloader:
     def __init__(self):
         self.url_queue = Queue()
         self.results = []
-    def fetch_data(self, url):
 
+    def fetch_data(self, url):
         try:
             response = requests.get(url).json()
-            if response['status'] == 'success':
+            if response["status"] == "success":
                 description = response["data"]["DETAIL_TEXT"]
                 return url, description
         except requests.RequestException as e:
@@ -54,6 +55,7 @@ class DescriptionsDownloader:
             page, description = self.fetch_data(url)
             self.results.append({"url": page, "description": description})
             self.url_queue.task_done()
+
     def scrape(self, urls, num_threads) -> list:
         for url in urls:
             self.url_queue.put(url)

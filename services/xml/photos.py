@@ -2,6 +2,7 @@ import datetime
 import pandas as pd
 from services.xml.parser import XMLParser
 from services.csv import CSVFile
+from typing import Union
 
 
 class PhotoMatcher(XMLParser):
@@ -9,7 +10,7 @@ class PhotoMatcher(XMLParser):
         super().__init__()
         self.parser_type = "with_photos"
 
-    def __call__(self, site_acceptor: str) -> CSVFile:
+    def __call__(self, site_acceptor: str) -> Union[CSVFile, str]:
         self.site_acceptor = site_acceptor
         self.collect_donor_feeds()
         file_name = f"photos_for_{site_acceptor}_{datetime.date.today()}.csv"

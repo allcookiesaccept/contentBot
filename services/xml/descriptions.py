@@ -3,6 +3,7 @@ import pandas as pd
 from services.xml.parser import XMLParser
 from services.api import DescriptionsDownloaderHTTPX, DescriptionsDownloader
 from services.csv import CSVFile
+from typing import Union
 
 
 class DescriptionMatcher(XMLParser):
@@ -10,7 +11,7 @@ class DescriptionMatcher(XMLParser):
         super().__init__()
         self.parser_type = "with_description"
 
-    def __call__(self, site_acceptor) -> CSVFile:
+    def __call__(self, site_acceptor) -> Union[CSVFile, str]:
         self.site_acceptor = site_acceptor
         self.collect_donor_feeds()
         self.downloader = DescriptionsDownloader()
@@ -23,7 +24,9 @@ class DescriptionMatcher(XMLParser):
             self.no_description_codes: list = self.no_descriptions_dataframe[
                 "id"
             ].to_list()
-            self.description_links_dataframe = self.extract_description_links()
+            self.description_links_dataframe: pd.DataFrame = (
+                self.extract_description_links()
+            )
             if len(self.description_links_dataframe) > 0:
                 self.collected_descriptions = self.collect_descriptions()
                 merged_dataframe = self.merge_dataframes()
@@ -31,9 +34,7 @@ class DescriptionMatcher(XMLParser):
             else:
                 return "No descriptions"
         except Exception as e:
-            print({e})
-
-
+            print(e)
 
     def extract_description_links(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=["id", "url"])
@@ -97,8 +98,7 @@ class DescriptionMatcher(XMLParser):
             inplace=True,
         )
         df.dropna(inplace=True)
-        print(df.shape[0])
         if len(df) == 0:
-            return pd.DataFrame(columns=['id', 'description'])
+            return pd.DataFrame(columns=["id", "description"])
 
         return df

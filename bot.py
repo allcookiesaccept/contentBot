@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 # TODO fix "AttributeError: 'NoneType' object has no attribute 'dataframe'" for DescriptionMatcher
 
+
 def logger_setup():
     logging.basicConfig(
         level=logging.INFO,
