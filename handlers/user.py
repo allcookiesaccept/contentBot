@@ -48,10 +48,8 @@ async def choose_donor_for_descriptions(message: Message):
     description_acceptor = message.text.split(": ")[-1]
     description_matcher = DescriptionMatcher()
     processed_data: CSVFile = description_matcher(description_acceptor)
-    print(type(processed_data))
-    print(type(processed_data.dataframe.shape[0]))
-    print(len(processed_data.dataframe))
-    if type(processed_data) == None:
+
+    if processed_data == "No descriptions":
         await message.answer(f"Не нашлось подходящих описаний")
     else:
         descriptions = CSVWorker(processed_data)

@@ -24,9 +24,12 @@ class DescriptionMatcher(XMLParser):
                 "id"
             ].to_list()
             self.description_links_dataframe = self.extract_description_links()
-            self.collected_descriptions = self.collect_descriptions()
-            merged_dataframe = self.merge_dataframes()
-            return CSVFile(file_name, merged_dataframe, self.parser_type)
+            if len(self.description_links_dataframe) > 0:
+                self.collected_descriptions = self.collect_descriptions()
+                merged_dataframe = self.merge_dataframes()
+                return CSVFile(file_name, merged_dataframe, self.parser_type)
+            else:
+                return "No descriptions"
         except Exception as e:
             print({e})
 
