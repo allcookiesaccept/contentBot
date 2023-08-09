@@ -12,19 +12,15 @@ from typing import Any
 from aiogram.methods.send_message import SendMessage
 from aiogram import Bot, Dispatcher
 
-class BotRouter(Router):
 
+class BotRouter(Router):
     def __init__(self, dp: Dispatcher):
         self.dp = dp
         super().__init__()
 
         self.init_handlers()
 
-        self.dp.message(
-            self.dp.message.handlers,
-            self.dp.message.filter
-        )
-
+        self.dp.message(self.dp.message.handlers, self.dp.message.filter)
 
     def init_handlers(self):
         self.message(Command("start"))(self.cmd_start)
@@ -33,7 +29,9 @@ class BotRouter(Router):
         self.message(Text(text="Загрузить фотографии"))(self.init_photo_task)
         self.message(Text(text=PHOTOLESS_SITES))(self.choose_donor_for_photos)
         self.message(Text(text="Добавить описания"))(self.init_description_task)
-        self.message(Text(text=DESCRIPTIONLESS_SITIES))(self.choose_donor_for_descriptions)
+        self.message(Text(text=DESCRIPTIONLESS_SITIES))(
+            self.choose_donor_for_descriptions
+        )
 
     async def cmd_start(self, message: Message):
         await message.answer("С чего начнем?", reply_markup=keys.TASK_TYPE)
@@ -46,6 +44,7 @@ class BotRouter(Router):
 
     async def init_photo_task(self, message: Message):
         await message.reply("На какой?", reply_markup=keys.PHOTO_ACCEPTOR)
+
     async def init_description_task(self, message: Message):
         # some_code
         await message.reply("На какой?", reply_markup=keys.DESCRIPTION_ACCEPTOR)
@@ -63,7 +62,6 @@ class BotRouter(Router):
             await message.answer_document(input_file)
 
         await message.answer(f"Повторить?", reply_markup=keys.REPRISE)
-
 
     async def choose_donor_for_descriptions(message: Message):
         description_acceptor = message.text.split(": ")[-1]
@@ -84,5 +82,3 @@ class BotRouter(Router):
             f"Повторить?",
             reply_markup=keys.REPRISE,
         )
-
-

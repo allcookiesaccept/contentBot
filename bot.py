@@ -35,7 +35,6 @@ async def main():
     user_router = BotRouter(dp=dp)
     dp.include_router(user_router)
 
-
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
