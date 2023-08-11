@@ -1,9 +1,10 @@
 from concurrent.futures import ThreadPoolExecutor
 import httpx
-
+from config.logger import logger
 
 class DescriptionsDownloaderHTTPXExecutor:
     def __init__(self):
+        logger.info("Starting Descriptions Downloader")
         self.results = []
 
     def fetch_data(self, url):
@@ -26,7 +27,7 @@ class DescriptionsDownloaderHTTPXExecutor:
     def scrape(self, urls, num_threads) -> list:
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             executor.map(self.worker, urls)
-
+        logger.info("Descriptions downloaded")
         return self.results
 
 
@@ -37,6 +38,7 @@ import requests
 
 class DescriptionsDownloader:
     def __init__(self):
+        logger.info("Starting Descriptions Downloader")
         self.url_queue = Queue()
         self.results = []
 
@@ -64,5 +66,6 @@ class DescriptionsDownloader:
             t.daemon = True
             t.start()
         self.url_queue.join()
+        logger.info("Descriptions downloaded")
 
         return self.results

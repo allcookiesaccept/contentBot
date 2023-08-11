@@ -2,13 +2,14 @@ import pandas as pd
 import requests
 import xml.etree.ElementTree as ET
 from db.data import FEEDS, COLUMNS
-
+from config.logger import logger
 
 class XMLParser:
     FEEDS = FEEDS
     COLUMNS = COLUMNS
 
     def __init__(self):
+        logger.info("Starting Parsing")
         self.parser_type = None  # will get the value in the child
         self.site_acceptor = None  # will get the value in the child
 

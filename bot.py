@@ -1,29 +1,15 @@
 import asyncio
-import logging
-
 from aiogram import Bot, Dispatcher
-
 from config.data_manager import DataManager
 from config.models import BotConfig
-from handlers import user
-from handlers.user_class import BotRouter
+from handlers.user import BotRouter
+from config.logger import logger
 
-
-logger = logging.getLogger(__name__)
-
-
-def logger_setup():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(filename)s:%(lineno)d #%(levelname)-8s "
-        "[%(asctime)s] - %(name)s - %(message)s",
-    )
-
-    logger.info("Starting bot")
 
 
 async def main():
-    logger_setup()
+
+    logger.info("Starting bot")
     data_manager: DataManager = DataManager.get_instance()
 
     config: BotConfig = data_manager._DataManager__bot_token
