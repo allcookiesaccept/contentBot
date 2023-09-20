@@ -16,13 +16,13 @@ class Keyboard:
             [KeyboardButton(text=message)] for message in DESCRIPTIONLESS_SITIES
         ]
         self.tasks = [[KeyboardButton(text=message)] for message in TASKS]
-        self.seo_tasks = [[KeyboardButton(text=message)] for message in SEO_TASKS]
+        # self.seo_tasks = [[KeyboardButton(text=message)] for message in SEO_TASKS]
 
     def __activate_keyboard_chat_objects(self):
-        self.SEO_TASKS = ReplyKeyboardMarkup(
-            keyboard=self.seo_tasks,
-            resize_keyboard=True
-        )
+        # self.SEO_TASKS = ReplyKeyboardMarkup(
+        #     keyboard=self.seo_tasks,
+        #     resize_keyboard=True
+        # )
 
         self.REPRISE = ReplyKeyboardMarkup(
             keyboard=self.reprise_answers,
