@@ -15,7 +15,7 @@ class XMLParser:
 
     def get_offers_from_xml(self, url: str) -> list:
         response = requests.get(url)
-        text = response.text
+        text = response.content.decode('utf-8')
         root = ET.fromstring(text)
 
         return root.findall(".//offer")
