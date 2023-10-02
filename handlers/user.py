@@ -7,9 +7,8 @@ from services.xml.photos import PhotoMatcher
 from services.xml.descriptions import DescriptionMatcher
 from config.models import CSVFile
 from services.csv.worker import CSVWorker
-from db.data import DESCRIPTIONLESS_SITIES, PHOTOLESS_SITES
+from config.data import DESCRIPTIONLESS_SITIES, PHOTOLESS_SITES
 from aiogram import Dispatcher
-# from checkers.seo.sitemap import SitemapChecker
 
 CHUNK_SIZE = 2000
 
@@ -33,11 +32,6 @@ class BotRouter(Router):
         self.message(Text(text=DESCRIPTIONLESS_SITIES))(
             self.choose_donor_for_descriptions
         )
-        # self.message(Text(text="Seo-штучки"))(self.choose_seo_task)
-        # self.message(Text(text="Проверить sitemaps"))(self.check_sitemaps_on_projects)
-
-    # async def choose_seo_task(self, message: Message):
-    #     await message.answer("Хочешь — пирожного, хочешь — мороженого!", reply_markup=keys.SEO_TASKS)
 
     async def start_command(self, message: Message):
         await message.answer("С чего начнем?", reply_markup=keys.TASK_TYPE)
@@ -54,8 +48,6 @@ class BotRouter(Router):
     async def start_description_task(self, message: Message):
         # some_code
         await message.reply("На какой?", reply_markup=keys.DESCRIPTION_ACCEPTOR)
-
-
 
     async def choose_donor_for_photos(self,message: Message):
         photo_acceptor = message.text.split(": ")[-1]
@@ -90,19 +82,3 @@ class BotRouter(Router):
             f"Повторить?",
             reply_markup=keys.REPRISE,
         )
-
-    # async def check_sitemaps_on_projects(self, message: Message):
-    #     sitemap_checker = SitemapChecker()
-    #     check_result = sitemap_checker()
-    #
-    #     chunks = [check_result[i:i + CHUNK_SIZE] for i in range(0, len(check_result), CHUNK_SIZE)]
-    #     await message.answer(
-    #         f"Итоги проверки:"
-    #     )
-    #     for chunk in chunks:
-    #         await message.answer(chunk)
-    #
-    #     await message.answer(
-    #         f"Повторить?",
-    #         reply_markup=keys.REPRISE,
-    #     )

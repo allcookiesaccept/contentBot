@@ -75,11 +75,7 @@ SITES = [
 TASKS = [
     "Загрузить фотографии",
     "Добавить описания",
-    "Вызвать ошибку",
-    "Seo-штучки"
 ]
-
-SEO_TASKS = ["Проверить sitemaps"]
 
 REPRISE = ["Почему бы и нет?", "В другой раз."]
 
@@ -87,7 +83,3 @@ PHOTOLESS_SITES = [f"Сайт без фото: {site}" for site in SITES]
 DESCRIPTIONLESS_SITIES = [f"Сайт без описаний: {site}" for site in SITES]
 
 
-import pandas as pd
-
-sitemap_df = pd.read_excel('db/sitemaps_table.xlsx')
-SITEMAPS = sitemap_df.to_dict('records')

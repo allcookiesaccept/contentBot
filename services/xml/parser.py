@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 import xml.etree.ElementTree as ET
-from db.data import FEEDS, COLUMNS
+from config.data import FEEDS, COLUMNS
 from config.logger import logger
 
 class XMLParser:

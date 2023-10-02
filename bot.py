@@ -12,7 +12,7 @@ async def main():
     logger.info("Starting bot")
     data_manager: DataManager = DataManager.get_instance()
 
-    config: BotConfig = data_manager._DataManager__bot_token
+    config: BotConfig = data_manager.bot
 
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode="HTML")
     dp: Dispatcher = Dispatcher(bot=bot)

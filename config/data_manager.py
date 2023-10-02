@@ -2,11 +2,8 @@ from dotenv import load_dotenv
 import os
 from .models import Postgres, TelegramBot, BotConfig
 
-
-
 class DataManager:
     __instance = None
-
     @staticmethod
     def get_instance():
         if DataManager.__instance is None:
@@ -18,8 +15,8 @@ class DataManager:
             raise Exception("DataManger is a singleton class")
         else:
             load_dotenv()
-            self.__bot_token = self.get_token()
-            self.__postgres_info = self.load_postgres_data()
+            self.bot = self.get_token()
+            self.postgres = self.load_postgres_data()
             DataManager.__instance = self
 
     def get_token(self) -> BotConfig:
