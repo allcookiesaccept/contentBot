@@ -9,14 +9,6 @@ class TelegramBot:
 class BotConfig:
     tg_bot: TelegramBot
 
-@dataclass
-class Postgres:
-    host: str
-    port: str
-    database: str
-    user: str
-    password: str
-
 @dataclass()
 class CSVFile:
     filename: str

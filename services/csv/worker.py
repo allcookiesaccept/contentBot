@@ -2,19 +2,15 @@ from config.models import CSVFile
 from pathlib import Path
 import os
 
-project_folder_path = Path('../contentBot/')
+project_folder_path = Path(__file__).parent.parent
 
 class CSVWorker:
-
-
     def __init__(self, processed_data: CSVFile):
         self.worker = processed_data
         self.rows = len(processed_data.dataframe)
         self.chunk = 100
         self.ready_files_paths = []
-        self.content_files_directory = os.path.join(
-            project_folder_path, "content_files"
-        )
+        self.content_files_directory = project_folder_path / "content_files"
 
         self.__check_content_files_directory()
 
@@ -29,14 +25,13 @@ class CSVWorker:
             self.__divide_on_blocks()
         else:
             self.__create_file()
-
         return self.ready_files_paths
 
-    def __create_file(self) -> None:
-        file_path = os.path.join(self.content_files_directory, self.worker.filename)
+    def __create_file(self):
+        file_path = self.content_files_directory / self.worker.filename
         self.worker.dataframe.to_csv(file_path, encoding="utf-8", sep=";", index=False)
-        self.ready_files_paths.append(file_path)
-        return
+        self.ready_files_paths.append(str(file_path))
+        
 
     def __divide_on_blocks(self) -> None:
         blocks = [
